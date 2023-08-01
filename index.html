@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conjetura 3x + 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px;
+        }
+
+        p {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        canvas {
+            display: block;
+            margin: 20px auto;
+            max-width: 400px;
+        }
+    </style>
+    <!-- Incluir la librería de Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Conjetura 3x + 1</h1>
+        <label for="number">Ingrese un número:</label>
+        <input type="number" id="number" placeholder="Ej: 6">
+        <button onclick="performConjecture()">Calcular</button>
+        <p id="result"></p>
+        <table id="stepsTable"></table>
+        <!-- Agregar un elemento <canvas> para la gráfica -->
+        <canvas id="chart"></canvas>
+    </div>
+
+    <script>
+        function performConjecture() {
+            const inputNumber = document.getElementById('number').value;
+
+            if (inputNumber === '' || isNaN(inputNumber) || inputNumber <= 0) {
+                alert('Por favor, ingrese un número entero positivo.');
+                return;
+            }
+
+            let n = parseInt(inputNumber);
+            let steps = [];
+            steps.push(n);
+
+            while (n !== 1) {
+                if (n % 2 === 0) {
+                    n /= 2;
+                } else {
+                    n = 3 * n + 1;
+                }
+                steps.push(n);
+            }
+
+            const resultText = `La secuencia se detuvo después de ${steps.length - 1} pasos. El resultado es 1.`;
+            document.getElementById('result').textContent = resultText;
+
+            displayStepsTable(steps);
+            displayChart(steps);
+        }
+
+        function displayStepsTable(steps) {
+            const table = document.getElementById('stepsTable');
+            table.innerHTML = '';
+
+            const headerRow = document.createElement('tr');
+            const headerCellStep = document.createElement('th');
+            headerCellStep.textContent = 'Paso';
+            const headerCellValue = document.createElement('th');
+            headerCellValue.textContent = 'Valor';
+            headerRow.appendChild(headerCellStep);
+            headerRow.appendChild(headerCellValue);
+            table.appendChild(headerRow);
+
+            for (let i = 0; i < steps.length; i++) {
+                const row = document.createElement('tr');
+                const cellStep = document.createElement('td');
+                cellStep.textContent = i + 1;
+                const cellValue = document.createElement('td');
+                cellValue.textContent = steps[i];
+                row.appendChild(cellStep);
+                row.appendChild(cellValue);
+                table.appendChild(row);
+            }
+        }
+
+        function displayChart(steps) {
+            const ctx = document.getElementById('chart').getContext('2d');
+
+            const stepNumbers = Array.from({ length: steps.length }, (_, i) => i + 1);
+
+            const chartConfig = {
+                type: 'line',
+                data: {
+                    labels: stepNumbers,
+                    datasets: [{
+                        label: 'Valores de la Conjetura',
+                        data: steps,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBorderColor: 'rgba(75, 192, 192, 1)',
+                        pointBackgroundColor: '#fff',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Paso'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Valor'
+                            }
+                        }
+                    }
+                }
+            };
+
+            new Chart(ctx, chartConfig);
+        }
+    </script>
+</body>
+
+</html>
